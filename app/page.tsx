@@ -62,3 +62,25 @@ className="flex flex-col flex-1 h-full bg-surface-1"
         {!store.image ? (
           <ImportZone onFiles={handleFiles} disabled={store.status === 'loading'} />
         ) : (
+
+          <div className="flex flex-col flex-1">
+            <div className="flex items-center justify-between px-4 py-2 border-b border-surface-3">
+
+              <Toolbar
+                zoom={store.zoom}
+                onZoomIn={() => actions.setZoom(store.zoom + 0.25)}
+                onZoomOut={() => actions.setZoom(store.zoom - 0.25)}
+                onZoomReset={() => actions.setZoom(1)}
+                onToggleOriginal={() => actions.toggleOriginal()}
+                showOriginal={store.showOriginal}
+                onUndo={actions.undo}
+                onRedo={actions.redo}
+                canUndo={store.historyIndex > 0}
+                canRedo={store.historyIndex < store.history.length - 1}
+                disabled={store.status !== 'ready'}
+              />
+
+              <div className="flex items-center gap-2">
+                <ImportZone onFiles={handleFiles} compact disabled={store.status !== 'ready'} />
+
+              </div>
