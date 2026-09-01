@@ -56,29 +56,27 @@ export default function EditorPage() {
 
   const dims = store.image ? `${store.image.width} x ${store.image.height} px` : null;
   const isReady = store.status === 'ready';
-  // Calculate display dimensions for crop overlay (before rotation)
 
   const [cropMode, setCropMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Keyboard shortcuts and clipboard paste
+  // Keyboard shortcuts
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName;
+      const isInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
       const mod = e.metaKey || e.ctrlKey;
-      if (!mod) return;
 
-      if (e.key === 'z' && !e.shiftKey) {
-        e.preventDefault();
-        if (store.canUndo) actions.undo();
-      } else if (e.key === 'z' && e.shiftKey) {
-        e.preventDefault();
-        if (store.canRedo) actions.redo();
-      } else if (e.key === 's') {
-        e.preventDefault();
-        // Trigger export via a known DOM element
-        const exportBtn = document.querySelector('[data-export-btn]') as HTMLButtonElement | null;
-        if (exportBtn && !exportBtn.disabled) exportBtn.click();
+      if (mod) {
+        if (e.key === 'z' && !e.shiftKey) { e.preventDefault(); if (store.canUndo) actions.undo(); return; }
+        if (e.key === 'z' && e.shiftKey) { e.preventDefault(); if (store.canRedo) actions.redo(); return; }
+        if (e.key === 's') { e.preventDefault(); const btn = document.querySelector('[data-export-btn]') as HTMLButtonElement|null; if (btn&&!btn.disabled) btn.click(); return; }
       }
+
+      if (isInput) return;
+
+      if (e.key === 'r' || e.key === 'R') { e.preventDefault(); e.shiftKey ? actions.setRotation(-90) : actions.setRotation(90); return; }
+      if (e.key === 'f' || e.key === 'F') { e.preventDefault(); actions.toggleOriginal(); return; }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
@@ -182,7 +180,6 @@ export default function EditorPage() {
                     imageWidth={store.image.width}
                     imageHeight={store.image.height}
                     zoom={store.zoom}
-                    
                     crop={store.editState.geometric.crop}
                     onCropChange={actions.setCrop}
                     onCropApply={(crop) => { actions.setCrop(crop); setCropMode(false); }}
