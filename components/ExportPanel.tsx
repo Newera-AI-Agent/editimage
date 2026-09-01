@@ -43,7 +43,7 @@ export default function ExportPanel({ disabled, onExport }: Props) {
         <label htmlFor="export-filename" className="text-xs text-text-secondary">Filename</label>
         <input id="export-filename" type="text" value={filename} onChange={(e) => setFilename(e.target.value)} disabled={disabled || exporting} className="w-full px-3 py-2 text-sm rounded-lg border border-surface-3 bg-surface-2 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-accent focus:outline-none disabled:opacity-40" />
       </div>
-      <button onClick={handleExport} disabled={disabled || exporting} className="w-full px-4 py-2.5 text-sm font-medium rounded-lg bg-accent text-white hover:bg-accent-strong disabled:opacity-40 transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 focus-visible:outline-none" aria-label="Export image">
+      <button data-export-btn onClick={handleExport} disabled={disabled || exporting} className="w-full px-4 py-2.5 text-sm font-medium rounded-lg bg-accent text-white hover:bg-accent-strong disabled:opacity-40 transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 focus-visible:outline-none" aria-label="Export image">
         {exporting ? 'Exporting...' : 'Export'}
       </button>
     </div>
