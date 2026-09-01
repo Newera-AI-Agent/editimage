@@ -56,6 +56,50 @@ export default function EditorPage() {
   const dims = store.image ? `${store.image.width} x ${store.image.height} px` : null;
   const isReady = store.status === 'ready';
 
+  // Keyboard shortcuts and clipboard paste
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const mod = e.metaKey || e.ctrlKey;
+      if (!mod) return;
+
+      if (e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        if (store.canUndo) actions.undo();
+      } else if (e.key === 'z' && e.shiftKey) {
+        e.preventDefault();
+        if (store.canRedo) actions.redo();
+      } else if (e.key === 's') {
+        e.preventDefault();
+        // Trigger export via a known DOM element
+        const exportBtn = document.querySelector('[data-export-btn]') as HTMLButtonElement | null;
+        if (exportBtn && !exportBtn.disabled) exportBtn.click();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [actions, store.canUndo, store.canRedo]);
+
+  // Clipboard paste support
+  useEffect(() => {
+    const pasteHandler = (e: ClipboardEvent) => {
+      if (!isReady && store.status !== 'loading') {
+        const items = e.clipboardData?.items;
+        if (items) {
+          for (let i = 0; i < items.length; i++) {
+            if (items[i].type.startsWith('image/')) {
+              e.preventDefault();
+              const file = items[i].getAsFile();
+              if (file) handleFiles([file]);
+              return;
+            }
+          }
+        }
+      }
+    };
+    window.addEventListener('paste', pasteHandler);
+    return () => window.removeEventListener('paste', pasteHandler);
+  }, [isReady, store.status, handleFiles]);
+
   return (
     <div className="flex flex-col h-screen bg-surface-0">
       {!store.image ? (

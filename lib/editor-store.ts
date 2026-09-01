@@ -29,6 +29,8 @@ export function createInitialStore(): EditorStore {
     zoom: 1,
     showOriginal: false,
     statusMessage: '',
+    canUndo: false,
+    canRedo: false,
   };
 }
 
