@@ -122,27 +122,32 @@ export default function EditorPage() {
   return (
     <div className="flex flex-col h-screen bg-surface-0">
       {!store.image ? (
-        <div className="flex-1 flex flex-col items-center justify-center p-6 gap-8">
+        <div className="flex-1 flex flex-col items-center justify-center p-6 gap-6">
+          {/* Empty-state illustration */}
+          <div className="relative w-48 h-48 text-surface-4">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="w-full h-full">
+              <rect x="40" y="30" width="120" height="140" rx="12" stroke="currentColor" strokeWidth="2" />
+              <circle cx="100" cy="85" r="30" stroke="currentColor" strokeWidth="2" />
+              <path d="M55 150l30-35 20 20 40-45" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="100" cy="85" r="8" fill="currentColor" opacity="0.3" />
+            </svg>
+          </div>
           <div className="text-center space-y-2">
-            <h1 className="text-4xl font-bold text-text-primary tracking-tight">EditImage</h1>
+            <h1 className="text-3xl font-bold text-text-primary tracking-tight">EditImage</h1>
             <p className="text-text-secondary text-sm max-w-md">
               A fast, privacy-first image editor. No uploads, no tracking — your images stay on your device.
             </p>
           </div>
           <ImportZone onFiles={handleFiles} disabled={store.status === 'loading'} />
-          <div className="flex gap-6 text-xs text-text-muted">
-            <span className="flex items-center gap-1">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
-              Private
-            </span>
-            <span className="flex items-center gap-1">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
-              Fast
-            </span>
-            <span className="flex items-center gap-1">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
-              No ads
-            </span>
+          <div className="flex gap-6 text-xs text-text-muted flex-wrap justify-center">
+            <span>Drag & drop</span>
+            <span className="hidden sm:inline">—</span>
+            <span className="hidden sm:inline">Click to browse</span>
+            <span className="hidden sm:inline">—</span>
+            <span>Paste from clipboard</span>
+          </div>
+          <div className="text-xs text-text-muted mt-2 space-y-1 text-center">
+            <p>Once loaded: <kbd className="px-1.5 py-0.5 text-xs bg-surface-2 border border-surface-3 rounded">Ctrl+Z</kbd> undo · <kbd className="px-1.5 py-0.5 text-xs bg-surface-2 border border-surface-3 rounded">Ctrl+S</kbd> export · <kbd className="px-1.5 py-0.5 text-xs bg-surface-2 border border-surface-3 rounded">R</kbd> rotate · <kbd className="px-1.5 py-0.5 text-xs bg-surface-2 border border-surface-3 rounded">F</kbd> before/after</p>
           </div>
         </div>
       ) : (

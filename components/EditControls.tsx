@@ -24,6 +24,7 @@ interface Props {
   onFlipV: () => void;
   onReset: () => void;
   cropMode: boolean;
+  onApplyPreset: (presetId: string) => void;
   onCropToggle: () => void;
 }
 
