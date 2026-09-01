@@ -13,9 +13,13 @@ export default function ExportPanel({ disabled, onExport }: Props) {
   const [exporting, setExporting] = useState(false);
 
   const handleExport = async () => {
+    if (exporting) return;
     setExporting(true);
-    await onExport(format.toLowerCase(), quality, filename);
-    setExporting(false);
+    try {
+      await onExport(format.toLowerCase(), quality, filename);
+    } finally {
+      setExporting(false);
+    }
   };
 
   return (

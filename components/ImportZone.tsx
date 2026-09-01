@@ -4,11 +4,12 @@ import { useCallback, useRef, useState } from 'react';
 import { SUPPORTED_TYPES, MAX_FILE_SIZE } from '@/lib/types';
 
 interface ImportZoneProps {
-  onImageLoaded: (file: File) => void;
+  onFiles: (files: File[]) => void;
   disabled: boolean;
+  compact?: boolean;
 }
 
-export default function ImportZone({ onImageLoaded, disabled }: ImportZoneProps) {
+export default function ImportZone({ onFiles, disabled, compact }: ImportZoneProps) {
   const [dragOver, setDragOver] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -23,8 +24,8 @@ export default function ImportZone({ onImageLoaded, disabled }: ImportZoneProps)
       setValidationError(`File too large: ${(file.size / 1024 / 1024).toFixed(1)}MB. Maximum is ${MAX_FILE_SIZE / 1024 / 1024}MB.`);
       return;
     }
-    onImageLoaded(file);
-  }, [onImageLoaded]);
+    onFiles([file]);
+  }, [onFiles]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -39,6 +40,33 @@ export default function ImportZone({ onImageLoaded, disabled }: ImportZoneProps)
     if (files && files.length > 0) validateAndLoad(files[0]);
     if (inputRef.current) inputRef.current.value = '';
   }, [validateAndLoad]);
+
+  if (compact) {
+    return (
+      <div>
+        <button
+          type="button"
+          onClick={() => !disabled && inputRef.current?.click()}
+          disabled={disabled}
+          className="px-3 py-1.5 text-xs font-medium rounded-lg border border-surface-3 text-text-secondary hover:bg-surface-2 hover:text-text-primary disabled:opacity-40 transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none"
+          aria-label="Import new image"
+        >
+          New Image
+        </button>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          onChange={handleChange}
+          className="hidden"
+          aria-hidden="true"
+        />
+        {validationError && (
+          <p role="alert" className="mt-2 text-sm text-danger">{validationError}</p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">

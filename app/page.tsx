@@ -39,7 +39,7 @@ export default function EditorPage() {
     actions.setStatusMessage('Exporting...');
     try {
       const blob = await exportEditedImage(
-        store.image!.source,
+        store.image.source,
         store.editState,
         format as 'png' | 'jpeg' | 'webp',
         quality
@@ -56,35 +56,31 @@ export default function EditorPage() {
   const dims = store.image ? `${store.image.width} x ${store.image.height} px` : null;
 
   return (
-    <div>
-className="flex flex-col flex-1 h-full bg-surface-1"
->
-        {!store.image ? (
+    <div className="flex flex-col h-screen bg-surface-0">
+      {!store.image ? (
+        <div className="flex-1 flex items-center justify-center p-4">
           <ImportZone onFiles={handleFiles} disabled={store.status === 'loading'} />
-        ) : (
-
-          <div className="flex flex-col flex-1">
-            <div className="flex items-center justify-between px-4 py-2 border-b border-surface-3">
-
-              <Toolbar
-                zoom={store.zoom}
-                onZoomIn={() => actions.setZoom(store.zoom + 0.25)}
-                onZoomOut={() => actions.setZoom(store.zoom - 0.25)}
-                onZoomReset={() => actions.setZoom(1)}
-                onToggleOriginal={() => actions.toggleOriginal()}
-                showOriginal={store.showOriginal}
-                onUndo={actions.undo}
-                onRedo={actions.redo}
-                canUndo={store.historyIndex > 0}
-                canRedo={store.historyIndex < store.history.length - 1}
-                disabled={store.status !== 'ready'}
-              />
-
-              <div className="flex items-center gap-2">
-                <ImportZone onFiles={handleFiles} compact disabled={store.status !== 'ready'} />
-
-              </div>
-
-            </div>
-
-            <div className="flex flex-1 overflow-hidden">
+        </div>
+      ) : (
+        <>
+          <div className="flex items-center justify-between px-4 py-2 border-b border-surface-3 shrink-0">
+            <Toolbar
+              zoom={store.zoom}
+              onZoomIn={() => actions.setZoom(Math.min(store.zoom + 0.25, 4))}
+              onZoomOut={() => actions.setZoom(Math.max(store.zoom - 0.25, 0.1))}
+              onZoomReset={() => actions.setZoom(1)}
+              onToggleOriginal={() => actions.toggleOriginal()}
+              showOriginal={store.showOriginal}
+              onUndo={actions.undo}
+              onRedo={actions.redo}
+              canUndo={store.historyIndex > 0}
+              canRedo={store.historyIndex < store.history.length - 1}
+              disabled={store.status !== 'ready'}
+            />
+            <ImportZone onFiles={handleFiles} compact disabled={store.status !== 'ready'} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
