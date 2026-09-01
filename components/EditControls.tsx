@@ -23,9 +23,11 @@ interface Props {
   onFlipH: () => void;
   onFlipV: () => void;
   onReset: () => void;
+  cropMode: boolean;
+  onCropToggle: () => void;
 }
 
-export default function EditControls({ editState, disabled, onAdjust, onRotateLeft, onRotateRight, onFlipH, onFlipV, onReset }: Props) {
+export default function EditControls({ editState, disabled, onAdjust, onRotateLeft, onRotateRight, onFlipH, onFlipV, onReset, cropMode, onCropToggle }: Props) {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -91,6 +93,9 @@ export default function EditControls({ editState, disabled, onAdjust, onRotateLe
         </button>
         <button onClick={onFlipV} disabled={disabled} className="px-3 py-1.5 text-xs font-medium rounded-lg border border-surface-3 text-text-secondary hover:bg-surface-2 hover:text-text-primary disabled:opacity-40 transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none" aria-label="Flip vertical">
           Flip V
+        </button>
+        <button onClick={onCropToggle} disabled={disabled} className={"px-3 py-1.5 text-xs font-medium rounded-lg border " + (cropMode ? "border-accent bg-accent-subtle/30 text-accent" : "border-surface-3 text-text-secondary hover:bg-surface-2 hover:text-text-primary") + " disabled:opacity-40 transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none"} aria-label="Toggle crop mode">
+          Crop
         </button>
         <button onClick={onReset} disabled={disabled} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-danger/10 text-danger border border-danger/30 hover:bg-danger/20 disabled:opacity-40 transition-colors focus-visible:ring-2 focus-visible:ring-danger focus-visible:outline-none" aria-label="Reset all edits">
           Reset All

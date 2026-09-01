@@ -1,12 +1,13 @@
 'use client';
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import ImportZone from '@/components/ImportZone';
 import ImageCanvas from '@/components/ImageCanvas';
 import EditControls from '@/components/EditControls';
 import ExportPanel from '@/components/ExportPanel';
 import Toolbar from '@/components/Toolbar';
 import StatusBar from '@/components/StatusBar';
+import CropOverlay from '@/components/CropOverlay';
 import { exportEditedImage, downloadBlob, loadImageFromFile } from '@/lib/image';
 import { useEditorStore } from '@/lib/editor-store';
 
@@ -55,6 +56,18 @@ export default function EditorPage() {
 
   const dims = store.image ? `${store.image.width} x ${store.image.height} px` : null;
   const isReady = store.status === 'ready';
+  // Calculate display dimensions for crop overlay (before rotation)
+  const displayDims = store.image ? (() => {
+    const r = store.editState.geometric.rotation;
+    const naturalW = store.image.width;
+    const naturalH = store.image.height;
+    const isRotated = r === 90 || r === 270;
+    const baseW = isRotated ? naturalH : naturalW;
+    const baseH = isRotated ? naturalW : naturalH;
+    return { width: baseW * store.zoom, height: baseH * store.zoom };
+  })() : { width: 0, height: 0 };
+
+  const [cropMode, setCropMode] = useState(false);
 
   // Keyboard shortcuts and clipboard paste
   useEffect(() => {
@@ -126,12 +139,25 @@ export default function EditorPage() {
           </div>
           <div className="flex flex-1 overflow-hidden">
             <div className="flex-1 overflow-auto p-4 flex items-start justify-center">
-              <ImageCanvas
-                image={store.image.source}
-                editState={store.editState}
-                zoom={store.zoom}
-                showOriginal={store.showOriginal}
-              />
+              <div className="relative">
+                <ImageCanvas
+                  image={store.image.source}
+                  editState={store.editState}
+                  zoom={store.zoom}
+                  showOriginal={store.showOriginal}
+                />
+                {cropMode && store.image && (
+                  <CropOverlay
+                    imageWidth={store.image.width}
+                    imageHeight={store.image.height}
+                    displayWidth={displayDims.width}
+                    displayHeight={displayDims.height}
+                    crop={store.editState.geometric.crop}
+                    onCropChange={actions.setCrop}
+                    disabled={!isReady}
+                  />
+                )}
+              </div>
             </div>
             <aside className="w-72 shrink-0 border-l border-surface-3 overflow-y-auto p-4 space-y-4">
               <EditControls
@@ -143,6 +169,8 @@ export default function EditorPage() {
                 onFlipH={actions.toggleFlipH}
                 onFlipV={actions.toggleFlipV}
                 onReset={actions.resetEdits}
+                cropMode={cropMode}
+                onCropToggle={() => setCropMode(!cropMode)}
               />
               <ExportPanel
                 disabled={!isReady}
