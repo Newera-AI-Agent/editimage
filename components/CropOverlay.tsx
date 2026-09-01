@@ -1,13 +1,12 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { CropRect } from '@/lib/types';
 
 interface Props {
   imageWidth: number;
   imageHeight: number;
-  displayWidth: number;
-  displayHeight: number;
+  zoom: number;
   crop: CropRect | null;
   onCropChange: (crop: CropRect | null) => void;
   onCropApply: (crop: CropRect | null) => void;
@@ -17,7 +16,7 @@ interface Props {
 export default function CropOverlay({
   imageWidth,
   imageHeight,
-  scale,
+  zoom,
   crop,
   onCropChange,
   onCropApply,
@@ -25,8 +24,11 @@ export default function CropOverlay({
 }: Props) {
   const [active, setActive] = useState(false);
   const [dragging, setDragging] = useState(false);
-  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
+  const [start, setStart] = useState<{ x: number; y: number } | null>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+
+  const displayW = imageWidth * zoom;
+  const displayH = imageHeight * zoom;
 
   const defaultCrop: CropRect = {
     x: Math.round(imageWidth * 0.05),
@@ -37,73 +39,106 @@ export default function CropOverlay({
 
   const rect = crop || defaultCrop;
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (disabled) return;
-    e.stopPropagation();
-    const el = overlayRef.current;
-    if (!el) return;
-    const bounds = el.getBoundingClientRect();
-    setDragStart({
-      x: (e.clientX - bounds.left) / scale,
-      y: (e.clientY - bounds.top) / scale,
-    });
+  const handleStart = useCallback((clientX: number, clientY: number) => {
+    if (disabled || !overlayRef.current) return;
+    const b = overlayRef.current.getBoundingClientRect();
+    setStart({ x: clientX - b.left, y: clientY - b.top });
     setDragging(true);
-  }, [disabled, scale]);
+  }, [disabled]);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!dragging || !dragStart || !overlayRef.current) return;
-    const bounds = overlayRef.current.getBoundingClientRect();
-    const currentX = (e.clientX - bounds.left) / scale;
-    const currentY = (e.clientY - bounds.top) / scale;
-
-    const newX = Math.max(0, Math.min(dragStart.x, currentX));
-    const newY = Math.max(0, Math.min(dragStart.y, currentY));
-    const newW = Math.abs(currentX - dragStart.x);
-    const newH = Math.abs(currentY - dragStart.y);
-
+  const handleMove = useCallback((clientX: number, clientY: number) => {
+    if (!dragging || !start || !overlayRef.current) return;
+    const b = overlayRef.current.getBoundingClientRect();
+    const curX = clientX - b.left;
+    const curY = clientY - b.top;
+    const x1 = start.x;
+    const y1 = start.y;
+    const nx = Math.round(Math.min(x1, curX) / zoom);
+    const ny = Math.round(Math.min(y1, curY) / zoom);
+    const nw = Math.round(Math.abs(curX - x1) / zoom);
+    const nh = Math.round(Math.abs(curY - y1) / zoom);
     onCropChange({
-      x: Math.round(newX),
-      y: Math.round(newY),
-      width: Math.round(Math.min(newW, imageWidth - newX)),
-      height: Math.round(Math.min(newH, imageHeight - newY)),
+      x: Math.max(0, nx),
+      y: Math.max(0, ny),
+      width: Math.min(nw, imageWidth - nx),
+      height: Math.min(nh, imageHeight - ny),
     });
-  }, [dragging, dragStart, scale, imageWidth, imageHeight, onCropChange]);
+  }, [dragging, start, zoom, imageWidth, imageHeight, onCropChange]);
 
-  const handleMouseUp = useCallback(() => {
+  const handleEnd = useCallback(() => {
     setDragging(false);
-    setDragStart(null);
+    setStart(null);
   }, []);
 
-  const handleToggle = useCallback(() => {
-    if (disabled) return;
-    if (active) {
-      onCropApply(crop);
-    } else {
-      onCropChange(defaultCrop);
-    }
-    setActive(!active);
-  }, [active, disabled, crop, onCropApply, onCropChange]);
+  const handleApply = useCallback(() => {
+    onCropApply(crop);
+    setActive(false);
+  }, [crop, onCropApply]);
 
   const handleCancel = useCallback(() => {
-    setActive(false);
-    setDragging(false);
     onCropApply(null);
-    onCropChange(null);
-  }, [onCropApply, onCropChange]);
+    setActive(false);
+  }, [onCropApply]);
+
+  const handleActivate = useCallback(() => {
+    if (!active) {
+      onCropChange(defaultCrop);
+      setActive(true);
+    }
+  }, [active, onCropChange, defaultCrop]);
 
   return (
-    <div className="relative">
-      <div className="flex gap-2 mb-2">
+    <div className="flex flex-col gap-1">
+      {active && (
+        <div
+          ref={overlayRef}
+          className="relative border border-surface-3 rounded overflow-hidden"
+          style={{ width: displayW, height: displayH }}
+          onMouseDown={(e) => handleStart(e.clientX, e.clientY)}
+          onMouseMove={(e) => handleMove(e.clientX, e.clientY)}
+          onMouseUp={handleEnd}
+          onMouseLeave={handleEnd}
+        >
+          <div className="absolute inset-0 bg-black/50" />
+          <div
+            className="absolute border-2 border-accent"
+            style={{
+              left: rect.x * zoom,
+              top: rect.y * zoom,
+              width: rect.width * zoom,
+              height: rect.height * zoom,
+            }}
+          >
+            <div className="absolute inset-0 bg-white/10" />
+            {(['tl', 'tr', 'bl', 'br'] as const).map((c) => (
+              <div
+                key={c}
+                className="absolute w-3 h-3 border-white"
+                style={{
+                  top: c[0] === 't' ? -1 : undefined,
+                  bottom: c[0] === 'b' ? -1 : undefined,
+                  left: c[1] === 'l' ? -1 : undefined,
+                  right: c[1] === 'r' ? -1 : undefined,
+                  borderTopWidth: c[0] === 't' ? 2 : 0,
+                  borderBottomWidth: c[0] === 'b' ? 2 : 0,
+                  borderLeftWidth: c[1] === 'l' ? 2 : 0,
+                  borderRightWidth: c[1] === 'r' ? 2 : 0,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      <div className="flex gap-1 mt-1">
         <button
           type="button"
-          onClick={handleToggle}
+          onClick={active ? handleApply : handleActivate}
           disabled={disabled}
-          className={"px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none " +
+          className={"px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors " +
             (active
-              ? "bg-accent text-white border-accent"
+              ? "bg-accent text-white border-accent hover:bg-accent-strong"
               : "border-surface-3 text-text-secondary hover:bg-surface-2 hover:text-text-primary"
             )}
-          aria-label={active ? 'Apply crop' : 'Crop image'}
         >
           {active ? 'Apply Crop' : 'Crop'}
         </button>
@@ -111,41 +146,12 @@ export default function CropOverlay({
           <button
             type="button"
             onClick={handleCancel}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-surface-3 text-text-secondary hover:bg-surface-2 hover:text-text-primary transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none"
-            aria-label="Cancel crop"
+            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-surface-3 text-text-secondary hover:bg-surface-2 hover:text-text-primary transition-colors"
           >
             Cancel
           </button>
         )}
       </div>
-      {active && (
-        <div
-          ref={overlayRef}
-          className="relative overflow-hidden rounded-lg border border-surface-3 bg-surface-1/50"
-          style={{ width: imageWidth * scale, height: imageHeight * scale }}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-        >
-          <div className="absolute inset-0 bg-black/40" />
-          <div
-            className="absolute border-2 border-accent bg-transparent"
-            style={{
-              left: rect.x * scale,
-              top: rect.y * scale,
-              width: rect.width * scale,
-              height: rect.height * scale,
-            }}
-          >
-            <div className="absolute inset-0 bg-white/5" />
-            <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-white -translate-x-0.5 -translate-y-0.5" />
-            <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-white translate-x-0.5 -translate-y-0.5" />
-            <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-white -translate-x-0.5 translate-y-0.5" />
-            <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-white translate-x-0.5 translate-y-0.5" />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

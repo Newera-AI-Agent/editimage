@@ -57,15 +57,6 @@ export default function EditorPage() {
   const dims = store.image ? `${store.image.width} x ${store.image.height} px` : null;
   const isReady = store.status === 'ready';
   // Calculate display dimensions for crop overlay (before rotation)
-  const displayDims = store.image ? (() => {
-    const r = store.editState.geometric.rotation;
-    const naturalW = store.image.width;
-    const naturalH = store.image.height;
-    const isRotated = r === 90 || r === 270;
-    const baseW = isRotated ? naturalH : naturalW;
-    const baseH = isRotated ? naturalW : naturalH;
-    return { width: baseW * store.zoom, height: baseH * store.zoom };
-  })() : { width: 0, height: 0 };
 
   const [cropMode, setCropMode] = useState(false);
 
@@ -150,8 +141,8 @@ export default function EditorPage() {
                   <CropOverlay
                     imageWidth={store.image.width}
                     imageHeight={store.image.height}
-                    displayWidth={displayDims.width}
-                    displayHeight={displayDims.height}
+                    zoom={store.zoom}
+                    
                     crop={store.editState.geometric.crop}
                     onCropChange={actions.setCrop}
                     onCropApply={(crop) => { actions.setCrop(crop); setCropMode(false); }}
