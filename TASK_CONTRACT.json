@@ -1,0 +1,29 @@
+{
+  "originalRequest": "public, editimage",
+  "normalizedInterpretation": "public, editimage",
+  "assumptions": [],
+  "profile": "fast",
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "description": "public, editimage",
+      "mandatory": true,
+      "status": "pending",
+      "evidenceType": "custom",
+      "acceptanceCriteria": "Concrete implementation evidence is recorded and the outcome matches the user request."
+    }
+  ],
+  "featureMatrix": [
+    "public, editimage"
+  ],
+  "contentMatrix": [],
+  "assetManifest": [],
+  "audioManifest": [],
+  "testMatrix": [],
+  "artifactMatrix": [],
+  "platformRequirements": [],
+  "permissions": [],
+  "deferredItems": [],
+  "createdAt": 1788257006574,
+  "updatedAt": 1788257006575
+}
