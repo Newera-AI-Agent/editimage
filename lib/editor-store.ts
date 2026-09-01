@@ -6,6 +6,7 @@ import {
   EditorStatus,
   EditorError,
   CropRect,
+  PRESET_FILTERS,
 } from './types';
 
 export interface EditorStore {
@@ -53,6 +54,7 @@ export interface EditorActions {
   undo: () => void;
   redo: () => void;
   setStatusMessage: (msg: string) => void;
+  applyPreset: (presetId: string) => void;
   getSnapshot: () => EditorStore;
 }
 
@@ -95,6 +97,19 @@ export function useEditorStore(): { store: EditorStore; actions: EditorActions }
       setStatus('empty');
     }
   }, []);
+
+  const applyPreset = useCallback((presetId: string) => {
+    setEditState(prev => {
+      pushUndo(prev);
+      const filter = PRESET_FILTERS.find(f => f.id === presetId);
+      if (!filter) return prev;
+      return {
+        ...prev,
+        adjustments: { ...filter.adjustments },
+      };
+    });
+    setStatusMessage(`Applied preset: ${presetId}`);
+  }, [pushUndo, setStatusMessage]);
 
   const updateAdjustment = useCallback(<K extends keyof EditState['adjustments']>(key: K, value: EditState['adjustments'][K]) => {
     setEditState(prev => {
@@ -188,7 +203,7 @@ export function useEditorStore(): { store: EditorStore; actions: EditorActions }
   const actions: EditorActions = {
     setImage, setStatus, setError, setZoom, toggleOriginal,
     updateAdjustment, setRotation, toggleFlipH, toggleFlipV, setCrop,
-    resetEdits, undo, redo, setStatusMessage, getSnapshot,
+    resetEdits, undo, redo, setStatusMessage, applyPreset, getSnapshot,
   };
 
   return { store, actions };
