@@ -54,6 +54,7 @@ export default function EditorPage() {
   }, [store.image, store.editState, actions]);
 
   const dims = store.image ? `${store.image.width} x ${store.image.height} px` : null;
+  const isReady = store.status === 'ready';
 
   return (
     <div className="flex flex-col h-screen bg-surface-0">
@@ -73,11 +74,11 @@ export default function EditorPage() {
               showOriginal={store.showOriginal}
               onUndo={actions.undo}
               onRedo={actions.redo}
-              canUndo={store.historyIndex > 0}
-              canRedo={store.historyIndex < store.history.length - 1}
-              disabled={store.status !== 'ready'}
+              canUndo={isReady}
+              canRedo={isReady}
+              disabled={!isReady}
             />
-            <ImportZone onFiles={handleFiles} compact disabled={store.status !== 'ready'} />
+            <ImportZone onFiles={handleFiles} compact disabled={!isReady} />
           </div>
           <div className="flex flex-1 overflow-hidden">
             <div className="flex-1 overflow-auto p-4 flex items-start justify-center">
@@ -91,7 +92,7 @@ export default function EditorPage() {
             <aside className="w-72 shrink-0 border-l border-surface-3 overflow-y-auto p-4 space-y-4">
               <EditControls
                 editState={store.editState}
-                disabled={store.status !== 'ready'}
+                disabled={!isReady}
                 onAdjust={actions.updateAdjustment}
                 onRotateLeft={() => actions.setRotation(-90)}
                 onRotateRight={() => actions.setRotation(90)}
@@ -100,7 +101,7 @@ export default function EditorPage() {
                 onReset={actions.resetEdits}
               />
               <ExportPanel
-                disabled={store.status !== 'ready'}
+                disabled={!isReady}
                 onExport={handleExport}
               />
             </aside>

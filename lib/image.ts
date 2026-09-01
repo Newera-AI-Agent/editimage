@@ -1,3 +1,4 @@
+import type { EditState, ImageFormat } from './types';
 export type { EditState, ImageFormat } from './types';
 
 /**
