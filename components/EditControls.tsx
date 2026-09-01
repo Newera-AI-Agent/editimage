@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { EditState } from '@/lib/types';
+import { EditState, FILTER_PRESETS } from '@/lib/types';
 
 type SD = { key: string; label: string; min: number; max: number; step: number; unit: string; };
 
