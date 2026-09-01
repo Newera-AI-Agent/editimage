@@ -15,6 +15,8 @@
   --color-danger: #ff6b6b;
   --color-success: #51cf66;
   --color-warning: #ffd43b;
+  --color-info: #4dabf7;
+  --color-surface-4: #2d2d3a;
   --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
 }
 

@@ -35,15 +35,15 @@ export default function ExportPanel({ disabled, onExport }: Props) {
       </div>
       {format !== 'PNG' && (
         <div className="space-y-1">
-          <label htmlFor="export-quality" className="text-xs text-secondary">Quality: {Math.round(quality * 100)}%</label>
+          <label htmlFor="export-quality" className="text-xs text-text-secondary">Quality: {Math.round(quality * 100)}%</label>
           <input id="export-quality" type="range" min="0.1" max="1" step="0.1" value={quality} onChange={(e) => setQuality(parseFloat(e.target.value))} disabled={disabled || exporting} className="w-full h-1.5 bg-surface-3 rounded-lg appearance-none cursor-pointer accent-accent disabled:opacity-40"/>
         </div>
       )}
       <div className="space-y-1">
-        <label htmlFor="export-filename" className="text-xs text-secondary">Filename</label>
-        <input id="export-filename" type="text" value={filename} onChange={(e) => setFilename(e.target.value)} disabled={disabled || exporting} className="w-full px-3 py-2 text-sm rounded-lg border border-surface-3 bg-surface-2 text-primary placeholder:text-muted focus:ring-2 focus:ring-accent focus:outline-none disabled:opacity-40" />
+        <label htmlFor="export-filename" className="text-xs text-text-secondary">Filename</label>
+        <input id="export-filename" type="text" value={filename} onChange={(e) => setFilename(e.target.value)} disabled={disabled || exporting} className="w-full px-3 py-2 text-sm rounded-lg border border-surface-3 bg-surface-2 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-accent focus:outline-none disabled:opacity-40" />
       </div>
-      <button onClick={handleExport} disabled={disabled || exporting} className="w-full px-4 py-2.5 text-sm font-medium rounded-lg bg-accent text-white hover:bg-accent-hover disabled:opacity-40 transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:offset-2 focus-visible:outline-none" aria-label="Export image">
+      <button onClick={handleExport} disabled={disabled || exporting} className="w-full px-4 py-2.5 text-sm font-medium rounded-lg bg-accent text-white hover:bg-accent-strong disabled:opacity-40 transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 focus-visible:outline-none" aria-label="Export image">
         {exporting ? 'Exporting...' : 'Export'}
       </button>
     </div>
