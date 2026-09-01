@@ -1,5 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
-import { getAdjustedImageData, editStateFromAdjustments, applyRotation, applyFlip, flipHorizontal, flipVertical } from '@/lib/image';
+import { describe, it, expect } from 'vitest';
+import {
+  flipHorizontal,
+  flipVertical,
+  editStateFromAdjustments,
+} from '@/lib/image';
 
-// Mock canvas for NodeJS environment
-class MockCanva…(5751 chars)
+describe('editStateFromAdjustments', () => {
+  i…(1032 chars)
