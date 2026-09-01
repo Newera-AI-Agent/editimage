@@ -52,3 +52,13 @@ export default function EditorPage() {
       actions.setStatusMessage(err.message || 'Export failed');
     }
   }, [store.image, store.editState, actions]);
+
+  const dims = store.image ? `${store.image.width} x ${store.image.height} px` : null;
+
+  return (
+    <div>
+className="flex flex-col flex-1 h-full bg-surface-1"
+>
+        {!store.image ? (
+          <ImportZone onFiles={handleFiles} disabled={store.status === 'loading'} />
+        ) : (
