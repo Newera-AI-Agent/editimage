@@ -62,3 +62,5 @@ export interface ImageData {
 
 export const SUPPORTED_TYPES = ['image/png', 'image/jpeg', 'image/webp'] as const;
 export const MAX_FILE_SIZE = 20 * 1024 * 1024;
+
+export interface EditorError { code: string; message: string; }
