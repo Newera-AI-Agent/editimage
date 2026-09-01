@@ -47,9 +47,9 @@ export default function EditorPage() {
       downloadBlob(blob, filename + '.' + (format === 'jpeg' ? 'jpg' : format));
       actions.setStatus('ready');
       actions.setStatusMessage('Exported!');
-    } catch (err: any) {
+    } catch (err: unknown) {
       actions.setStatus('error');
-      actions.setStatusMessage(err.message || 'Export failed');
+      actions.setStatusMessage((err as Error).message || 'Export failed');
     }
   }, [store.image, store.editState, actions]);
 

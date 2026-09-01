@@ -46,7 +46,7 @@ export default function ImportZone({ onFiles, disabled, compact }: ImportZonePro
       <div>
         <button
           type="button"
-          onClick={() => !disabled && inputRef.current?.click()}
+          onClick={() => { if (!disabled) inputRef.current?.click(); }}
           disabled={disabled}
           className="px-3 py-1.5 text-xs font-medium rounded-lg border border-surface-3 text-text-secondary hover:bg-surface-2 hover:text-text-primary disabled:opacity-40 transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none"
           aria-label="Import new image"
@@ -77,8 +77,8 @@ export default function ImportZone({ onFiles, disabled, compact }: ImportZonePro
         onDragOver={(e) => { e.preventDefault(); if (!disabled) setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
-        onClick={() => !disabled && inputRef.current?.click()}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); !disabled && inputRef.current?.click(); } }}
+        onClick={() => { if (!disabled) inputRef.current?.click(); }}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!disabled) inputRef.current?.click(); } }}
         className={`
           relative flex flex-col items-center justify-center gap-3 p-10 rounded-xl border-2 border-dashed
           transition-colors duration-200 cursor-pointer outline-none
