@@ -16,6 +16,8 @@ export interface EditorStore {
   zoom: number;
   showOriginal: boolean;
   statusMessage: string;
+  canUndo: boolean;
+  canRedo: boolean;
 }
 
 export function createInitialStore(): EditorStore {
@@ -78,7 +80,8 @@ export function useEditorStore(): { store: EditorStore; actions: EditorActions }
     undoStack.current.push({ editState: state });
     if (undoStack.current.length > 50) undoStack.current.shift();
     redoStack.current = [];
-  }, []);
+    updateUndoRedoState();
+  }, [updateUndoRedoState]);
 
   const setImage = useCallback((data: ImageData | null) => {
     setImageState(data);
@@ -149,8 +152,9 @@ export function useEditorStore(): { store: EditorStore; actions: EditorActions }
       redoStack.current.push({ editState: editState });
       setEditState(entry.editState);
       setStatusMessage('Undo');
+      updateUndoRedoState();
     }
-  }, [editState]);
+  }, [editState, updateUndoRedoState]);
 
   const redo = useCallback(() => {
     const entry = redoStack.current.pop();
@@ -158,8 +162,9 @@ export function useEditorStore(): { store: EditorStore; actions: EditorActions }
       undoStack.current.push({ editState: editState });
       setEditState(entry.editState);
       setStatusMessage('Redo');
+      updateUndoRedoState();
     }
-  }, [editState]);
+  }, [editState, updateUndoRedoState]);
 
   const toggleOriginal = useCallback(() => {
     setShowOriginal(prev => !prev);
@@ -173,9 +178,11 @@ export function useEditorStore(): { store: EditorStore; actions: EditorActions }
     zoom,
     showOriginal,
     statusMessage,
-  }), [image, editState, status, error, zoom, showOriginal, statusMessage]);
+    canUndo,
+    canRedo,
+  }), [image, editState, status, error, zoom, showOriginal, statusMessage, canUndo, canRedo]);
 
-  const store: EditorStore = { image, editState, status, error, zoom, showOriginal, statusMessage };
+  const store: EditorStore = { image, editState, status, error, zoom, showOriginal, statusMessage, canUndo, canRedo };
   const actions: EditorActions = {
     setImage, setStatus, setError, setZoom, toggleOriginal,
     updateAdjustment, setRotation, toggleFlipH, toggleFlipV, setCrop,

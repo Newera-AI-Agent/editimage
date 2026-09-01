@@ -24,10 +24,10 @@ export default function ExportPanel({ disabled, onExport }: Props) {
 
   return (
     <div className="rounded-xl border border-surface-3 bg-surface-1 p-4 space-y-4">
-      <h3 className="text-sm font-medium text-primary">Export</h3>
+      <h3 className="text-sm font-medium text-text-primary">Export</h3>
       <div className="space-y-1">
-        <label htmlFor="export-format" className="text-xs text-secondary">Format</label>
-        <select id="export-format" value={format} onChange={(e) => setFormat(e.target.value)} disabled={disabled || exporting} className="w-full px-3 py-2 text-sm rounded-lg border border-surface-3 bg-surface-2 text-primary focus:ring-2 focus:ring-accent focus:outline-none disabled:opacity-40">
+        <label htmlFor="export-format" className="text-xs text-text-secondary">Format</label>
+        <select id="export-format" value={format} onChange={(e) => setFormat(e.target.value)} disabled={disabled || exporting} className="w-full px-3 py-2 text-sm rounded-lg border border-surface-3 bg-surface-2 text-text-primary focus:ring-2 focus:ring-accent focus:outline-none disabled:opacity-40">
           <option value="PNG">PNG</option>
           <option value="JPEG">JPEG</option>
           <option value="WebP">WebP</option>

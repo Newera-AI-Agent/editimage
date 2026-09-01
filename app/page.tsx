@@ -74,8 +74,8 @@ export default function EditorPage() {
               showOriginal={store.showOriginal}
               onUndo={actions.undo}
               onRedo={actions.redo}
-              canUndo={isReady}
-              canRedo={isReady}
+              canUndo={store.canUndo}
+              canRedo={store.canRedo}
               disabled={!isReady}
             />
             <ImportZone onFiles={handleFiles} compact disabled={!isReady} />
