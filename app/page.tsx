@@ -105,6 +105,20 @@ export default function EditorPage() {
     return () => window.removeEventListener('paste', pasteHandler);
   }, [isReady, store.status, handleFiles]);
 
+  // Escape to cancel crop
+  useEffect(() => {
+    if (!cropMode) return;
+    const escHandler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setCropMode(false);
+        actions.setCrop(null);
+        actions.setStatusMessage('Crop cancelled');
+      }
+    };
+    window.addEventListener('keydown', escHandler);
+    return () => window.removeEventListener('keydown', escHandler);
+  }, [cropMode, actions]);
+
   return (
     <div className="flex flex-col h-screen bg-surface-0">
       {!store.image ? (
@@ -172,11 +186,23 @@ export default function EditorPage() {
                 )}
               </div>
             </div>
-            <aside className="w-72 shrink-0 border-l border-surface-3 overflow-y-auto p-4 space-y-4">
+            {/* Sidebar toggle for mobile */}
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="lg:hidden fixed bottom-4 right-4 z-30 p-3 rounded-full bg-accent text-white shadow-lg hover:bg-accent-strong transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none"
+              aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d={sidebarOpen ? 'M6 18L18 6M6 6l12 12' : 'M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5'} />
+              </svg>
+            </button>
+            <aside className={`${sidebarOpen ? 'translate-x-0' : 'translate-x-full'} lg:translate-x-0 w-72 shrink-0 border-l border-surface-3 overflow-y-auto p-4 space-y-4 transition-transform duration-200 lg:static fixed right-0 top-0 bottom-0 z-20 bg-surface-1 pt-16 lg:pt-4`}>
               <EditControls
                 editState={store.editState}
                 disabled={!isReady}
                 onAdjust={actions.updateAdjustment}
+                onApplyPreset={actions.applyPreset}
                 onRotateLeft={() => actions.setRotation(-90)}
                 onRotateRight={() => actions.setRotation(90)}
                 onFlipH={actions.toggleFlipH}
