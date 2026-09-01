@@ -66,6 +66,13 @@ export function useEditorStore(): { store: EditorStore; actions: EditorActions }
 
   const undoStack = useRef<UndoEntry[]>([]);
   const redoStack = useRef<UndoEntry[]>([]);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
+
+  const updateUndoRedoState = useCallback(() => {
+    setCanUndo(undoStack.current.length > 0);
+    setCanRedo(redoStack.current.length > 0);
+  }, []);
 
   const pushUndo = useCallback((state: EditState) => {
     undoStack.current.push({ editState: state });
