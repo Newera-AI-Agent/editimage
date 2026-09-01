@@ -107,6 +107,19 @@ export function useEditorStore(): { store: EditorStore; actions: EditorActions }
     });
   }, [pushUndo]);
 
+  const applyPreset = useCallback((presetId: string) => {
+    const preset = FILTER_PRESETS.find(f => f.id === presetId);
+    if (!preset) return;
+    setEditState(prev => {
+      pushUndo(prev);
+      return {
+        ...prev,
+        adjustments: { ...prev.adjustments, ...preset.adjustments },
+      };
+    });
+    setStatusMessage('Applied filter: ' + preset.label);
+  }, [pushUndo, setStatusMessage]);
+
   const setRotation = useCallback((angle: number) => {
     setEditState(prev => {
       pushUndo(prev);
@@ -189,7 +202,7 @@ export function useEditorStore(): { store: EditorStore; actions: EditorActions }
   const actions: EditorActions = {
     setImage, setStatus, setError, setZoom, toggleOriginal,
     updateAdjustment, setRotation, toggleFlipH, toggleFlipV, setCrop,
-    resetEdits, undo, redo, setStatusMessage, getSnapshot,
+    resetEdits, undo, redo, setStatusMessage, applyPreset, getSnapshot,
   };
 
   return { store, actions };

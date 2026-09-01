@@ -59,6 +59,7 @@ export default function EditorPage() {
   // Calculate display dimensions for crop overlay (before rotation)
 
   const [cropMode, setCropMode] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Keyboard shortcuts and clipboard paste
   useEffect(() => {
