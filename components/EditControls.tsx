@@ -28,7 +28,7 @@ interface Props {
   onCropToggle: () => void;
 }
 
-export default function EditControls({ editState, disabled, onAdjust, onRotateLeft, onRotateRight, onFlipH, onFlipV, onReset, cropMode, onCropToggle }: Props) {
+export default function EditControls({ editState, disabled, onAdjust, onApplyPreset, onRotateLeft, onRotateRight, onFlipH, onFlipV, onReset, cropMode, onCropToggle }: Props) {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -82,6 +82,35 @@ export default function EditControls({ editState, disabled, onAdjust, onRotateLe
           })}
         </div>
       )}
+      {/* Filter Presets */}
+      <div className="border-t border-surface-3 px-4 py-3">
+        <p className="text-xs text-text-muted mb-2">Presets</p>
+        <div className="grid grid-cols-4 gap-1.5">
+          {FILTER_PRESETS.map((preset) => {
+            const isActive = Object.entries(preset.adjustments).every(
+              ([k, v]) => editState.adjustments[k as keyof EditState['adjustments']] === v
+            );
+            return (
+              <button
+                key={preset.id}
+                type="button"
+                onClick={() => onApplyPreset(preset.id)}
+                disabled={disabled}
+                className={
+                  'px-2 py-1.5 text-xs font-medium rounded-lg border transition-colors focus-visible:ring-1 focus-visible:ring-accent focus-visible:outline-none ' +
+                  (isActive
+                    ? 'border-accent bg-accent-subtle/30 text-accent'
+                    : 'border-surface-3 text-text-secondary hover:bg-surface-2 hover:text-text-primary')
+                  + (disabled ? ' opacity-40 cursor-not-allowed' : '')
+                }
+                title={preset.description}
+              >
+                {preset.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
       <div className="border-t border-surface-3 px-4 py-3 flex flex-wrap gap-2">
         <button onClick={onRotateLeft} disabled={disabled} className="px-3 py-1.5 text-xs font-medium rounded-lg border border-surface-3 text-text-secondary hover:bg-surface-2 hover:text-text-primary disabled:opacity-40 transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none" aria-label="Rotate left">
           Rotate Left
