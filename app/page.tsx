@@ -79,6 +79,38 @@ export default function EditorPage() {
             />
             <ImportZone onFiles={handleFiles} compact disabled={store.status !== 'ready'} />
           </div>
+          <div className="flex flex-1 overflow-hidden">
+            <div className="flex-1 overflow-auto p-4 flex items-start justify-center">
+              <ImageCanvas
+                image={store.image.source}
+                editState={store.editState}
+                zoom={store.zoom}
+                showOriginal={store.showOriginal}
+              />
+            </div>
+            <aside className="w-72 shrink-0 border-l border-surface-3 overflow-y-auto p-4 space-y-4">
+              <EditControls
+                editState={store.editState}
+                disabled={store.status !== 'ready'}
+                onAdjust={actions.updateAdjustment}
+                onRotateLeft={() => actions.setRotation(-90)}
+                onRotateRight={() => actions.setRotation(90)}
+                onFlipH={actions.toggleFlipH}
+                onFlipV={actions.toggleFlipV}
+                onReset={actions.resetEdits}
+              />
+              <ExportPanel
+                disabled={store.status !== 'ready'}
+                onExport={handleExport}
+              />
+            </aside>
+          </div>
+          <StatusBar
+            status={store.status}
+            message={store.statusMessage}
+            fileName={store.image?.fileName ?? null}
+            dimensions={dims}
+          />
         </>
       )}
     </div>
