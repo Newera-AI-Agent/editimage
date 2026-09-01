@@ -6,6 +6,7 @@ import {
   EditorStatus,
   EditorError,
   CropRect,
+  FILTER_PRESETS,
 } from './types';
 
 export interface EditorStore {
