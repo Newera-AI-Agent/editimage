@@ -6,7 +6,8 @@ import { CropRect } from '@/lib/types';
 interface Props {
   imageWidth: number;
   imageHeight: number;
-  scale: number;
+  displayWidth: number;
+  displayHeight: number;
   crop: CropRect | null;
   onCropChange: (crop: CropRect | null) => void;
   onCropApply: (crop: CropRect | null) => void;

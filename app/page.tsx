@@ -154,6 +154,7 @@ export default function EditorPage() {
                     displayHeight={displayDims.height}
                     crop={store.editState.geometric.crop}
                     onCropChange={actions.setCrop}
+                    onCropApply={(crop) => { actions.setCrop(crop); setCropMode(false); }}
                     disabled={!isReady}
                   />
                 )}
