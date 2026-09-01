@@ -84,3 +84,7 @@ className="flex flex-col flex-1 h-full bg-surface-1"
                 <ImportZone onFiles={handleFiles} compact disabled={store.status !== 'ready'} />
 
               </div>
+
+            </div>
+
+            <div className="flex flex-1 overflow-hidden">
